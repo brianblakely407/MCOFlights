@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCO Flight Operations Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --green: #00e5a0;
+    --red: #ff4757;
+    --yellow: #ffd32a;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --font-mono: 'Space Mono', monospace;
+    --font-sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left h1 {
+    font-family: var(--font-mono);
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .header-left h1 span { color: var(--accent); }
+  .header-left .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: var(--font-mono);
+  }
+
+  .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .info-banner {
+    background: rgba(0,212,255,0.07);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.6;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; }
+  .stat-card.delays::before { background: var(--yellow); }
+  .stat-card.cancels::before { background: var(--red); }
+  .stat-card.on-time::before { background: var(--green); }
+  .stat-card.total::before { background: var(--accent); }
+
+  .stat-label { font-size:11px; font-family:var(--font-mono); color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .stat-value { font-family:var(--font-mono); font-size:36px; font-weight:700; line-height:1; }
+  .stat-card.delays .stat-value { color:var(--yellow); }
+  .stat-card.cancels .stat-value { color:var(--red); }
+  .stat-card.on-time .stat-value { color:var(--green); }
+  .stat-card.total .stat-value { color:var(--accent); }
+  .stat-sub { font-size:12px; color:var(--muted); margin-top:6px; }
+  .stat-badge { display:inline-block; font-size:11px; font-family:var(--font-mono); padding:2px 8px; border-radius:4px; margin-top:6px; }
+  .badge-up { background:rgba(255,71,87,0.15); color:var(--red); }
+  .badge-down { background:rgba(0,229,160,0.15); color:var(--green); }
+
+  .tabs {
+    display: flex; gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 20px;
+    width: fit-content;
+  }
+  .tab-btn {
+    background: none; border: none;
+    color: var(--muted);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .tab-btn.active { background: var(--accent); color: var(--bg); }
+  .tab-btn:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  @media(max-width:900px){ .charts-grid{ grid-template-columns:1fr; } }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .chart-card.wide { grid-column: 1 / -1; }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chart-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-title .dot { width:8px; height:8px; border-radius:50%; }
+  .legend { display:flex; gap:12px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted); font-family:var(--font-mono); }
+  .legend-dot { width:8px; height:8px; border-radius:2px; }
+  canvas { max-height: 220px; }
+
+  .route-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  @media(max-width:900px){ .route-section{ grid-template-columns:1fr; } }
+
+  .route-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .route-card h3 {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .route-list { display:flex; flex-direction:column; gap:6px; max-height:460px; overflow-y:auto; }
+  .route-list::-webkit-scrollbar { width:4px; }
+  .route-list::-webkit-scrollbar-track { background:transparent; }
+  .route-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  .route-row {
+    display: grid;
+    grid-template-columns: 52px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    background: var(--surface2);
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .route-row:hover { border-color: var(--border); }
+  .route-code { font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--accent); }
+  .route-name { font-size:12px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .route-delays { font-family:var(--font-mono); font-size:11px; color:var(--yellow); text-align:right; white-space:nowrap; }
+  .route-cancels { font-family:var(--font-mono); font-size:11px; color:var(--red); text-align:right; white-space:nowrap; }
+  .route-header-row {
+    display: grid;
+    grid-template-columns: 52px 1fr auto auto;
+    gap: 10px;
+    padding: 0 10px 8px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .route-header-row span:nth-child(3),
+  .route-header-row span:nth-child(4) { text-align:right; }
+  .bar-wrap { height:2px; background:var(--border); border-radius:2px; margin-top:3px; }
+  .bar-fill { height:100%; border-radius:2px; }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .filter-label { font-size:11px; font-family:var(--font-mono); color:var(--muted); white-space:nowrap; }
+  .filter-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    outline: none;
+  }
+  .filter-select:focus { border-color:var(--accent); }
+
+  .ticker-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 14px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+  }
+  .ticker-label { font-family:var(--font-mono); font-size:10px; color:var(--accent); text-transform:uppercase; letter-spacing:2px; white-space:nowrap; border-right:1px solid var(--border); padding-right:12px; }
+  .ticker-track { overflow:hidden; flex:1; }
+  .ticker-items { display:flex; gap:28px; white-space:nowrap; animation:tick 50s linear infinite; }
+  @keyframes tick { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .ticker-item { font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .ticker-item .code { color:var(--accent); }
+  .ticker-item .sd { color:var(--yellow); }
+  .ticker-item .sc { color:var(--red); }
+
+  .loading-overlay {
+    position:fixed; inset:0;
+    background:rgba(10,14,26,0.85);
+    z-index:200;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:16px;
+  }
+  .loading-overlay.hidden { display:none; }
+  .spinner {
+    width:36px; height:36px;
+    border:3px solid var(--border);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading-overlay p { font-family:var(--font-mono); font-size:12px; color:var(--muted); }
+
+  footer {
+    margin-top:28px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  footer p { font-size:11px; color:var(--muted); font-family:var(--font-mono); }
+  footer a { color:var(--accent); text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p>Loading MCO flight data...</p>
+</div>
+
+<div class="wrapper">
+  <header>
+    <div class="header-left">
+      <h1>MCO <span>//</span> FLIGHT OPS</h1>
+      <div class="subtitle">Orlando International · 8-Day Operations Trend · Updated by GitHub Actions</div>
+    </div>
+    <div class="header-right">
+      <div class="status-pill">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusLabel">LOADING</span>
+      </div>
+      <div class="status-pill" id="dataAge">DATA: —</div>
+    </div>
+  </header>
+
+  <div class="info-banner" id="infoBanner" style="display:none">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span id="bannerText"></span>
+  </div>
+
+  <div class="ticker-wrap">
+    <div class="ticker-label">TODAY</div>
+    <div class="ticker-track"><div class="ticker-items" id="tickerItems">—</div></div>
+  </div>
+
+  <div class="summary-grid" id="summaryCards"></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('arrivals')">↓ ARRIVALS</button>
+    <button class="tab-btn" onclick="switchTab('departures')">↑ DEPARTURES</button>
+    <button class="tab-btn" onclick="switchTab('combined')">⇅ COMBINED</button>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title"><div class="dot" style="background:var(--red)"></div>8-DAY CANCELLATIONS</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Arr</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,71,87,0.4)"></div>Dep</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,71,87,0.5);border:1px dashed var(--red)"></div>Rate</div>
+        </div>
+      </div>
+      <canvas id="cancelChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title"><div class="dot" style="background:var(--yellow)"></div>8-DAY DELAYS</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Arr</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,211,42,0.4)"></div>Dep</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,211,42,0.5);border:1px dashed var(--yellow)"></div>Avg Min</div>
+        </div>
+      </div>
+      <canvas id="delayChart"></canvas>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-header">
+        <div class="chart-title"><div class="dot" style="background:var(--accent)"></div>8-DAY COMBINED — ALL DISRUPTIONS</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Arr Delays</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Arr Cancels</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(0,212,255,0.6)"></div>Dep Delays</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,107,53,0.6)"></div>Dep Cancels</div>
+        </div>
+      </div>
+      <canvas id="overviewChart" style="max-height:170px"></canvas>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <span class="filter-label">VIEW DAY:</span>
+    <select class="filter-select" id="dayFilter" onchange="renderRouteTables()"></select>
+    <span class="filter-label">SORT:</span>
+    <select class="filter-select" id="sortFilter" onchange="renderRouteTables()">
+      <option value="delays">By Delays</option>
+      <option value="cancels">By Cancellations</option>
+      <option value="total">By Total</option>
+      <option value="code">By Code A–Z</option>
+    </select>
+    <span class="filter-label">SHOW:</span>
+    <select class="filter-select" id="minFilter" onchange="renderRouteTables()">
+      <option value="0">All routes</option>
+      <option value="1">1+ disruption</option>
+      <option value="5">5+ disruptions</option>
+      <option value="10">10+ disruptions</option>
+    </select>
+  </div>
+
+  <div class="route-section">
+    <div class="route-card">
+      <h3>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="7 17 17 7"/><polyline points="7 7 17 7 17 17"/></svg>
+        ARRIVALS INTO MCO — BY ORIGIN
+      </h3>
+      <div class="route-header-row"><span>CODE</span><span>ORIGIN CITY</span><span>DLY</span><span>CNX</span></div>
+      <div class="route-list" id="arrivalRoutes"></div>
+    </div>
+    <div class="route-card">
+      <h3>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2.5"><polyline points="17 7 7 17"/><polyline points="17 17 7 17 7 7"/></svg>
+        DEPARTURES FROM MCO — BY DESTINATION
+      </h3>
+      <div class="route-header-row"><span>CODE</span><span>DESTINATION</span><span>DLY</span><span>CNX</span></div>
+      <div class="route-list" id="departureRoutes"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Data: <a href="https://flightaware.com/commercial/aeroapi/" target="_blank">FlightAware AeroAPI</a> · Refreshed nightly via GitHub Actions · Airport: MCO / KMCO · Orlando, FL</p>
+    <p id="footerTs">—</p>
+  </footer>
+</div>
+
+<script>
+let dashData = null;
+let currentTab = 'arrivals';
+let cancelChart, delayChart, overviewChart;
+
+const CHART_OPTS = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#1a2235',
+      borderColor: '#1e2d45',
+      borderWidth: 1,
+      titleColor: '#e2e8f0',
+      bodyColor: '#94a3b8',
+      titleFont: { family: 'Space Mono', size: 11 },
+      bodyFont: { family: 'Space Mono', size: 11 },
+    }
+  },
+  scales: {
+    x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { family: 'Space Mono', size: 10 } } },
+    y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { family: 'Space Mono', size: 10 } } },
+  }
+};
+
+async function loadData() {
+  try {
+    const resp = await fetch('data/mco_flights.json?_=' + Date.now());
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    dashData = json.days;
+
+    // Show seed data notice if applicable
+    if (json._note) {
+      document.getElementById('infoBanner').style.display = 'flex';
+      document.getElementById('bannerText').textContent = json._note;
+    }
+
+    // Data age
+    const genAt = new Date(json.generated_at);
+    const ageHours = Math.round((Date.now() - genAt) / 3600000);
+    document.getElementById('dataAge').textContent =
+      ageHours < 1 ? 'DATA: <1h ago' :
+      ageHours < 24 ? `DATA: ${ageHours}h ago` :
+      `DATA: ${Math.round(ageHours/24)}d ago`;
+
+    document.getElementById('statusDot').style.background = 'var(--green)';
+    document.getElementById('statusLabel').textContent = 'DATA LOADED';
+
+    populateDayFilter();
+    renderAll();
+  } catch (err) {
+    document.getElementById('statusDot').style.background = 'var(--red)';
+    document.getElementById('statusLabel').textContent = 'LOAD ERROR';
+    document.getElementById('infoBanner').style.display = 'flex';
+    document.getElementById('bannerText').textContent =
+      `Could not load data/mco_flights.json — ${err.message}. Make sure the file exists in your repo.`;
+    console.error(err);
+  } finally {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+  }
+}
+
+function populateDayFilter() {
+  const sel = document.getElementById('dayFilter');
+  sel.innerHTML = dashData.map((d, i) =>
+    `<option value="${i}">${d.label} (${d.date})</option>`
+  ).join('');
+}
+
+function renderAll() {
+  renderSummaryCards();
+  renderCharts();
+  renderRouteTables();
+  renderTicker();
+  document.getElementById('footerTs').textContent =
+    'Dashboard rendered: ' + new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour12: true }) + ' ET';
+}
+
+function renderSummaryCards() {
+  const t = dashData[0];
+  const y = dashData[1] || t;
+  const totalDelays = t.arr_delays + t.dep_delays;
+  const totalCancels = t.arr_cancels + t.dep_cancels;
+  const prevDelays = y.arr_delays + y.dep_delays;
+  const prevCancels = y.arr_cancels + y.dep_cancels;
+  const dDelta = totalDelays - prevDelays;
+  const cDelta = totalCancels - prevCancels;
+  const pct = t.scheduled ? Math.round((totalDelays + totalCancels) / t.scheduled * 100) : 0;
+  const onTime = Math.max(0, t.scheduled - totalDelays - totalCancels);
+
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="stat-card total">
+      <div class="stat-label">Scheduled Today</div>
+      <div class="stat-value">${t.scheduled.toLocaleString()}</div>
+      <div class="stat-sub">Total operations</div>
+    </div>
+    <div class="stat-card delays">
+      <div class="stat-label">Delays Today</div>
+      <div class="stat-value">${totalDelays}</div>
+      <div class="stat-sub">${t.arr_delays} arr · ${t.dep_delays} dep</div>
+      <span class="stat-badge ${dDelta > 0 ? 'badge-up' : 'badge-down'}">
+        ${dDelta > 0 ? '▲' : '▼'} ${Math.abs(dDelta)} vs yesterday
+      </span>
+    </div>
+    <div class="stat-card cancels">
+      <div class="stat-label">Cancellations Today</div>
+      <div class="stat-value">${totalCancels}</div>
+      <div class="stat-sub">${t.arr_cancels} arr · ${t.dep_cancels} dep</div>
+      <span class="stat-badge ${cDelta > 0 ? 'badge-up' : 'badge-down'}">
+        ${cDelta > 0 ? '▲' : '▼'} ${Math.abs(cDelta)} vs yesterday
+      </span>
+    </div>
+    <div class="stat-card on-time">
+      <div class="stat-label">On-Time Est.</div>
+      <div class="stat-value">${onTime.toLocaleString()}</div>
+      <div class="stat-sub">${100 - pct}% of ops normal</div>
+      <span class="stat-badge ${pct > 20 ? 'badge-up' : 'badge-down'}">${pct}% disruption rate</span>
+    </div>
+    <div class="stat-card delays">
+      <div class="stat-label">Avg Delay Today</div>
+      <div class="stat-value">${t.avg_delay_min}<span style="font-size:16px">m</span></div>
+      <div class="stat-sub">Average minutes late</div>
+    </div>
+  `;
+}
+
+function renderCharts() {
+  const rev = [...dashData].reverse();
+  const labels = rev.map(d => d.label);
+  const arrC = rev.map(d => d.arr_cancels);
+  const depC = rev.map(d => d.dep_cancels);
+  const arrD = rev.map(d => d.arr_delays);
+  const depD = rev.map(d => d.dep_delays);
+  const rates = rev.map(d => d.scheduled ? +((d.arr_cancels + d.dep_cancels) / d.scheduled * 100).toFixed(1) : 0);
+  const avgMin = rev.map(d => d.avg_delay_min);
+  const gc = 'rgba(255,255,255,0.04)', tc = '#64748b';
+
+  const scalesStacked = {
+    x: { grid:{color:gc}, ticks:{color:tc,font:{family:'Space Mono',size:10}}, stacked:true },
+    y: { grid:{color:gc}, ticks:{color:tc,font:{family:'Space Mono',size:10}}, stacked:true },
+    y2: { position:'right', grid:{display:false}, ticks:{color:tc,font:{family:'Space Mono',size:10}} }
+  };
+
+  if (cancelChart) cancelChart.destroy();
+  cancelChart = new Chart(document.getElementById('cancelChart'), {
+    type:'bar',
+    data:{ labels, datasets:[
+      { label:'Arr Canceled', data:arrC, backgroundColor:'rgba(255,71,87,0.8)', borderRadius:3, stack:'s' },
+      { label:'Dep Canceled', data:depC, backgroundColor:'rgba(255,71,87,0.35)', borderRadius:3, stack:'s' },
+      { label:'Cancel Rate %', data:rates, type:'line', yAxisID:'y2',
+        borderColor:'rgba(255,71,87,0.6)', backgroundColor:'transparent',
+        borderDash:[4,3], pointRadius:3, pointBackgroundColor:'#ff4757', tension:0.3 }
+    ]},
+    options:{ ...CHART_OPTS, scales:scalesStacked }
+  });
+
+  if (delayChart) delayChart.destroy();
+  delayChart = new Chart(document.getElementById('delayChart'), {
+    type:'bar',
+    data:{ labels, datasets:[
+      { label:'Arr Delayed', data:arrD, backgroundColor:'rgba(255,211,42,0.8)', borderRadius:3, stack:'s' },
+      { label:'Dep Delayed', data:depD, backgroundColor:'rgba(255,211,42,0.35)', borderRadius:3, stack:'s' },
+      { label:'Avg Min Late', data:avgMin, type:'line', yAxisID:'y2',
+        borderColor:'rgba(255,211,42,0.6)', backgroundColor:'transparent',
+        borderDash:[4,3], pointRadius:3, pointBackgroundColor:'#ffd32a', tension:0.3 }
+    ]},
+    options:{ ...CHART_OPTS, scales:scalesStacked }
+  });
+
+  if (overviewChart) overviewChart.destroy();
+  overviewChart = new Chart(document.getElementById('overviewChart'), {
+    type:'bar',
+    data:{ labels, datasets:[
+      { label:'Arr Delays',  data:arrD, backgroundColor:'rgba(255,211,42,0.8)', borderRadius:2, stack:'arr' },
+      { label:'Arr Cancels', data:arrC, backgroundColor:'rgba(255,71,87,0.8)',  borderRadius:2, stack:'arr' },
+      { label:'Dep Delays',  data:depD, backgroundColor:'rgba(0,212,255,0.6)',  borderRadius:2, stack:'dep' },
+      { label:'Dep Cancels', data:depC, backgroundColor:'rgba(255,107,53,0.6)', borderRadius:2, stack:'dep' },
+    ]},
+    options:{ ...CHART_OPTS,
+      scales:{
+        x:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#64748b',font:{family:'Space Mono',size:10}}, stacked:true },
+        y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#64748b',font:{family:'Space Mono',size:10}}, stacked:true },
+      }
+    }
+  });
+}
+
+function renderRouteTables() {
+  const dayIdx = parseInt(document.getElementById('dayFilter').value || '0');
+  const sort = document.getElementById('sortFilter').value;
+  const minD = parseInt(document.getElementById('minFilter').value);
+  const day = dashData[dayIdx];
+
+  let routes = day.routes.filter(r => {
+    const total = r.arr_delays + r.arr_cancels + r.dep_delays + r.dep_cancels;
+    return total >= minD;
+  });
+
+  if (sort === 'delays')  routes.sort((a,b) => (b.arr_delays+b.dep_delays) - (a.arr_delays+a.dep_delays));
+  else if (sort === 'cancels') routes.sort((a,b) => (b.arr_cancels+b.dep_cancels) - (a.arr_cancels+a.dep_cancels));
+  else if (sort === 'total') routes.sort((a,b) => (b.arr_delays+b.arr_cancels+b.dep_delays+b.dep_cancels) - (a.arr_delays+a.arr_cancels+a.dep_delays+a.dep_cancels));
+  else routes.sort((a,b) => a.code.localeCompare(b.code));
+
+  const maxArr = Math.max(...routes.map(r => r.arr_delays), 1);
+  const maxDep = Math.max(...routes.map(r => r.dep_delays), 1);
+
+  const arrRoutes = currentTab === 'departures' ? [] :
+    routes.filter(r => currentTab === 'combined' || r.arr_delays + r.arr_cancels > 0);
+  const depRoutes = currentTab === 'arrivals' ? [] :
+    routes.filter(r => currentTab === 'combined' || r.dep_delays + r.dep_cancels > 0);
+
+  const makeRow = (r, isArr) => `
+    <div class="route-row">
+      <div class="route-code" style="color:${isArr ? 'var(--accent)' : 'var(--accent2)'}">${r.code}</div>
+      <div>
+        <div class="route-name">${r.name}</div>
+        <div class="bar-wrap">
+          <div class="bar-fill" style="width:${isArr ? r.arr_delays/maxArr : r.dep_delays/maxDep}00%;background:${isArr ? 'var(--yellow)' : 'var(--accent2)'}"></div>
+        </div>
+      </div>
+      <div class="route-delays">${isArr ? r.arr_delays : r.dep_delays}</div>
+      <div class="route-cancels">${isArr ? r.arr_cancels : r.dep_cancels}</div>
+    </div>`;
+
+  const empty = '<div style="color:var(--muted);font-size:12px;padding:12px;font-family:var(--font-mono)">No routes match current filters</div>';
+
+  document.getElementById('arrivalRoutes').innerHTML =
+    currentTab === 'departures' ? '' :
+    (arrRoutes.length ? arrRoutes.map(r => makeRow(r, true)).join('') : empty);
+
+  document.getElementById('departureRoutes').innerHTML =
+    currentTab === 'arrivals' ? '' :
+    (depRoutes.length ? depRoutes.map(r => makeRow(r, false)).join('') : empty);
+}
+
+function renderTicker() {
+  const today = dashData[0];
+  const active = today.routes
+    .filter(r => r.arr_delays + r.arr_cancels + r.dep_delays + r.dep_cancels > 0)
+    .sort((a,b) => (b.arr_delays+b.dep_delays) - (a.arr_delays+a.dep_delays))
+    .slice(0, 25);
+
+  const items = [...active, ...active].map(r => `
+    <span class="ticker-item">
+      <span class="code">${r.code}</span>
+      ${r.arr_delays ? ` <span class="sd">A:${r.arr_delays}D</span>` : ''}
+      ${r.arr_cancels ? ` <span class="sc">A:${r.arr_cancels}C</span>` : ''}
+      ${r.dep_delays ? ` <span class="sd">D:${r.dep_delays}D</span>` : ''}
+      ${r.dep_cancels ? ` <span class="sc">D:${r.dep_cancels}C</span>` : ''}
+      &nbsp;·
+    </span>`).join('');
+
+  document.getElementById('tickerItems').innerHTML = items || '— No disruptions —';
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['arrivals','departures','combined'][i] === tab);
+  });
+  renderRouteTables();
+}
+
+loadData();
+</script>
+</body>
+</html>

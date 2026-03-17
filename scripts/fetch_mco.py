@@ -11,7 +11,7 @@ import requests
 from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 
-API_KEY = os.environ.get(“AEROAPI_KEY”, “”)
+API_KEY = os.environ.get("AEROAPI_KEY", "")
 BASE_URL = “https://aeroapi.flightaware.com/aeroapi”
 AIRPORT = “KMCO”
 

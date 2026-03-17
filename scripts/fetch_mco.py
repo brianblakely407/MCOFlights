@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-“””
-fetch_mco.py
-Fetches 8 days of MCO arrival/departure data from FlightAware AeroAPI
-and writes structured JSON to data/mco_flights.json
-“””
+# fetch_mco.py
+
+# Fetches 8 days of MCO arrival/departure data from FlightAware AeroAPI
+
+# and writes structured JSON to data/mco_flights.json
 
 import os
 import json
@@ -17,12 +16,10 @@ BASE_URL = “https://aeroapi.flightaware.com/aeroapi”
 AIRPORT = “KMCO”
 
 HEADERS = {“x-apikey”: API_KEY}
-RATE_LIMIT_DELAY = 5  # seconds between API calls to avoid 429s
-
-# Top MCO route city names
+RATE_LIMIT_DELAY = 5
 
 CITY_NAMES = {
-“ATL”: “Atlanta”, “ORD”: “Chicago O’Hare”, “EWR”: “Newark”,
+“ATL”: “Atlanta”, “ORD”: “Chicago OHare”, “EWR”: “Newark”,
 “BOS”: “Boston”, “LGA”: “New York LaGuardia”, “PHL”: “Philadelphia”,
 “SJU”: “San Juan”, “BWI”: “Baltimore”, “DTW”: “Detroit”,
 “JFK”: “New York JFK”, “DFW”: “Dallas/Fort Worth”, “LAX”: “Los Angeles”,
@@ -43,22 +40,19 @@ CITY_NAMES = {
 “ISP”: “Long Island”, “ABE”: “Allentown”, “AVP”: “Scranton”
 }
 
-DELAY_THRESHOLD_SEC = 900  # 15 minutes
+DELAY_THRESHOLD_SEC = 900
 
 def safe_code(airport_dict):
-“”“Safely extract IATA or ICAO code from an airport dict, returning ‘???’ on any failure.”””
 if not airport_dict or not isinstance(airport_dict, dict):
 return “???”
 code = airport_dict.get(“code_iata”) or airport_dict.get(“code_icao”)
 if not code or not isinstance(code, str):
 return “???”
-# Strip K prefix from ICAO domestic codes (e.g. KATL -> ATL)
 if len(code) == 4 and code.startswith(“K”):
 code = code[1:]
 return code.strip() or “???”
 
 def fetch_flights(endpoint, date_str, retries=3):
-“”“Fetch flights for a given endpoint + date, with retry on 429.”””
 url = f”{BASE_URL}/airports/{AIRPORT}/flights/{endpoint}”
 params = {
 “start”: f”{date_str}T00:00:00Z”,
@@ -70,20 +64,19 @@ try:
 resp = requests.get(url, headers=HEADERS, params=params, timeout=30)
 if resp.status_code == 429:
 wait = 15 * (attempt + 1)
-print(f”  Rate limited on {endpoint} {date_str} — waiting {wait}s…”)
+print(f”  Rate limited on {endpoint} {date_str} - waiting {wait}s…”)
 time.sleep(wait)
 continue
 resp.raise_for_status()
 data = resp.json()
 return data.get(endpoint, [])
 except Exception as e:
-print(f”  Warning: {endpoint} {date_str} attempt {attempt+1} — {e}”)
+print(f”  Warning: {endpoint} {date_str} attempt {attempt+1} - {e}”)
 if attempt < retries - 1:
 time.sleep(5)
 return []
 
 def process_day(date_str, label):
-“”“Process one day of arrivals and departures.”””
 print(f”  Fetching {label} ({date_str})…”)
 
 ```
@@ -92,7 +85,6 @@ time.sleep(RATE_LIMIT_DELAY)
 departures = fetch_flights("departures", date_str)
 time.sleep(RATE_LIMIT_DELAY)
 
-# --- Arrivals ---
 arr_delays = 0
 arr_cancels = 0
 total_delay_sec = 0
@@ -114,7 +106,6 @@ for f in arrivals:
             total_delay_sec += delay
             delayed_count += 1
 
-# --- Departures ---
 dep_delays = 0
 dep_cancels = 0
 dep_by_route = defaultdict(lambda: {"delays": 0, "cancels": 0})
@@ -132,7 +123,6 @@ for f in departures:
             dep_delays += 1
             dep_by_route[code]["delays"] += 1
 
-# --- Merge routes ---
 all_codes = set(list(arr_by_route.keys()) + list(dep_by_route.keys()))
 routes = []
 for code in sorted(all_codes):
@@ -171,15 +161,18 @@ exit(1)
 
 ```
 print("Fetching 8 days of MCO data...")
-now_et = datetime.now(timezone.utc) - timedelta(hours=5)  # rough ET
+now_et = datetime.now(timezone.utc) - timedelta(hours=5)
 
 days = []
 for i in range(8):
     d = now_et - timedelta(days=i)
     date_str = d.strftime("%Y-%m-%d")
-    label = ("Today" if i == 0 else
-             "Yesterday" if i == 1 else
-             d.strftime("%a %-m/%-d"))
+    if i == 0:
+        label = "Today"
+    elif i == 1:
+        label = "Yesterday"
+    else:
+        label = d.strftime("%a %-m/%-d")
     day_data = process_day(date_str, label)
     days.append(day_data)
 
@@ -193,7 +186,7 @@ os.makedirs("data", exist_ok=True)
 with open("data/mco_flights.json", "w") as f:
     json.dump(output, f, indent=2)
 
-print(f"\nDone. Wrote data/mco_flights.json")
+print("Done. Wrote data/mco_flights.json")
 print(f"  Today: {days[0]['arr_delays']+days[0]['dep_delays']} delays, "
       f"{days[0]['arr_cancels']+days[0]['dep_cancels']} cancels")
 ```

@@ -1,0 +1,36 @@
+name: Fetch MCO Flight Data
+
+on:
+  schedule:
+    # Runs at 11:59 PM Eastern (03:59 UTC) every day — captures full day
+    - cron: '59 3 * * *'
+  workflow_dispatch:  # allows manual trigger from GitHub Actions tab
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch MCO data from AeroAPI
+        env:
+          AEROAPI_KEY: ${{ secrets.AEROAPI_KEY }}
+        run: python scripts/fetch_mco.py
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "chore: update MCO flight data $(date -u '+%Y-%m-%d')"
+          git push

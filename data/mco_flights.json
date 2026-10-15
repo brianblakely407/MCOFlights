@@ -1,79 +1,63 @@
 {
-  "generated_at": "2026-10-14T09:13:09.892388+00:00",
+  "generated_at": "2026-10-15T08:46:21.764078+00:00",
   "airport": "MCO",
   "days": [
     {
       "label": "Today",
-      "date": "2026-10-14",
+      "date": "2026-10-15",
       "scheduled": 90,
-      "arr_delays": 19,
+      "arr_delays": 17,
       "arr_cancels": 0,
-      "dep_delays": 16,
+      "dep_delays": 19,
       "dep_cancels": 0,
-      "avg_delay_min": 62,
+      "avg_delay_min": 67,
       "routes": [
         {
           "code": "AUS",
           "name": "Austin",
-          "arr_delays": 2,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "BHM",
-          "name": "BHM",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "BNA",
-          "name": "Nashville",
-          "arr_delays": 2,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "BOS",
-          "name": "Boston",
-          "arr_delays": 2,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "CLE",
-          "name": "Cleveland",
           "arr_delays": 1,
           "arr_cancels": 0,
           "dep_delays": 0,
           "dep_cancels": 0
         },
         {
-          "code": "COS",
-          "name": "COS",
+          "code": "BNA",
+          "name": "Nashville",
           "arr_delays": 0,
           "arr_cancels": 0,
           "dep_delays": 1,
           "dep_cancels": 0
         },
         {
-          "code": "CVG",
-          "name": "Cincinnati",
-          "arr_delays": 0,
+          "code": "BOS",
+          "name": "Boston",
+          "arr_delays": 1,
           "arr_cancels": 0,
-          "dep_delays": 1,
+          "dep_delays": 0,
           "dep_cancels": 0
         },
         {
-          "code": "DAL",
-          "name": "DAL",
-          "arr_delays": 0,
+          "code": "BWI",
+          "name": "Baltimore",
+          "arr_delays": 1,
           "arr_cancels": 0,
-          "dep_delays": 1,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "CLT",
+          "name": "Charlotte",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "DEN",
+          "name": "Denver",
+          "arr_delays": 3,
+          "arr_cancels": 0,
+          "dep_delays": 0,
           "dep_cancels": 0
         },
         {
@@ -81,15 +65,31 @@
           "name": "Dallas Fort Worth",
           "arr_delays": 1,
           "arr_cancels": 0,
-          "dep_delays": 0,
+          "dep_delays": 1,
           "dep_cancels": 0
         },
         {
-          "code": "IAH",
-          "name": "IAH",
-          "arr_delays": 1,
+          "code": "DJT",
+          "name": "DJT",
+          "arr_delays": 0,
           "arr_cancels": 0,
-          "dep_delays": 2,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "HOU",
+          "name": "HOU",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "KEF",
+          "name": "KEF",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
           "dep_cancels": 0
         },
         {
@@ -101,6 +101,30 @@
           "dep_cancels": 0
         },
         {
+          "code": "LGA",
+          "name": "New York LaGuardia",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "MAD",
+          "name": "MAD",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "MAN",
+          "name": "MAN",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
           "code": "MCI",
           "name": "Kansas City",
           "arr_delays": 1,
@@ -109,32 +133,24 @@
           "dep_cancels": 0
         },
         {
-          "code": "MDW",
-          "name": "Chicago Midway",
+          "code": "MEM",
+          "name": "MEM",
           "arr_delays": 0,
           "arr_cancels": 0,
           "dep_delays": 1,
           "dep_cancels": 0
         },
         {
-          "code": "MIA",
-          "name": "Miami",
+          "code": "MKE",
+          "name": "Milwaukee",
           "arr_delays": 1,
           "arr_cancels": 0,
           "dep_delays": 0,
           "dep_cancels": 0
         },
         {
-          "code": "MKE",
-          "name": "Milwaukee",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "ORD",
-          "name": "Chicago OHare",
+          "code": "MSY",
+          "name": "New Orleans",
           "arr_delays": 1,
           "arr_cancels": 0,
           "dep_delays": 0,
@@ -143,7 +159,7 @@
         {
           "code": "PHX",
           "name": "PHX",
-          "arr_delays": 1,
+          "arr_delays": 0,
           "arr_cancels": 0,
           "dep_delays": 1,
           "dep_cancels": 0
@@ -151,14 +167,30 @@
         {
           "code": "PIT",
           "name": "Pittsburgh",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "PVD",
+          "name": "PVD",
           "arr_delays": 0,
           "arr_cancels": 0,
           "dep_delays": 1,
           "dep_cancels": 0
         },
         {
-          "code": "PVD",
-          "name": "PVD",
+          "code": "PVU",
+          "name": "PVU",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "RSW",
+          "name": "Fort Myers",
           "arr_delays": 0,
           "arr_cancels": 0,
           "dep_delays": 1,
@@ -173,19 +205,19 @@
           "dep_cancels": 0
         },
         {
-          "code": "SEA",
-          "name": "Seattle",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
           "code": "SJU",
           "name": "San Juan",
           "arr_delays": 0,
           "arr_cancels": 0,
           "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "SNS",
+          "name": "SNS",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
           "dep_cancels": 0
         },
         {
@@ -197,19 +229,11 @@
           "dep_cancels": 0
         },
         {
-          "code": "TLH",
-          "name": "TLH",
-          "arr_delays": 1,
+          "code": "STL",
+          "name": "St Louis",
+          "arr_delays": 0,
           "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "VDF",
-          "name": "VDF",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
+          "dep_delays": 1,
           "dep_cancels": 0
         },
         {
@@ -221,8 +245,16 @@
           "dep_cancels": 0
         },
         {
-          "code": "YUL",
-          "name": "YUL",
+          "code": "VQQ",
+          "name": "VQQ",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "YYZ",
+          "name": "YYZ",
           "arr_delays": 1,
           "arr_cancels": 0,
           "dep_delays": 0,
@@ -232,6 +264,194 @@
     },
     {
       "label": "Yesterday",
+      "date": "2026-10-14",
+      "scheduled": 90,
+      "arr_delays": 13,
+      "arr_cancels": 0,
+      "dep_delays": 18,
+      "dep_cancels": 0,
+      "avg_delay_min": 62,
+      "routes": [
+        {
+          "code": "ATL",
+          "name": "Atlanta",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "BNA",
+          "name": "Nashville",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 3,
+          "dep_cancels": 0
+        },
+        {
+          "code": "BOS",
+          "name": "Boston",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "BWI",
+          "name": "Baltimore",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 2,
+          "dep_cancels": 0
+        },
+        {
+          "code": "CLT",
+          "name": "Charlotte",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "CMH",
+          "name": "Columbus",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "DAL",
+          "name": "DAL",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "DEN",
+          "name": "Denver",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "DFW",
+          "name": "Dallas Fort Worth",
+          "arr_delays": 2,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "HOU",
+          "name": "HOU",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "LAX",
+          "name": "Los Angeles",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "LGA",
+          "name": "New York LaGuardia",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "LHR",
+          "name": "LHR",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "MCO",
+          "name": "MCO",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "MEM",
+          "name": "MEM",
+          "arr_delays": 2,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "MKE",
+          "name": "Milwaukee",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "PHL",
+          "name": "Philadelphia",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "SAT",
+          "name": "SAT",
+          "arr_delays": 1,
+          "arr_cancels": 0,
+          "dep_delays": 0,
+          "dep_cancels": 0
+        },
+        {
+          "code": "SFO",
+          "name": "San Francisco",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "SJU",
+          "name": "San Juan",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "SMF",
+          "name": "SMF",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        },
+        {
+          "code": "STL",
+          "name": "St Louis",
+          "arr_delays": 0,
+          "arr_cancels": 0,
+          "dep_delays": 1,
+          "dep_cancels": 0
+        }
+      ]
+    },
+    {
+      "label": "Tue 10/13",
       "date": "2026-10-13",
       "scheduled": 90,
       "arr_delays": 7,
@@ -1562,210 +1782,6 @@
           "arr_delays": 0,
           "arr_cancels": 0,
           "dep_delays": 1,
-          "dep_cancels": 0
-        }
-      ]
-    },
-    {
-      "label": "Wed 10/7",
-      "date": "2026-10-07",
-      "scheduled": 90,
-      "arr_delays": 13,
-      "arr_cancels": 0,
-      "dep_delays": 18,
-      "dep_cancels": 0,
-      "avg_delay_min": 39,
-      "routes": [
-        {
-          "code": "ATL",
-          "name": "Atlanta",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "BNA",
-          "name": "Nashville",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 2,
-          "dep_cancels": 0
-        },
-        {
-          "code": "BOS",
-          "name": "Boston",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "BUF",
-          "name": "Buffalo",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "CLE",
-          "name": "Cleveland",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "CLT",
-          "name": "Charlotte",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "CMH",
-          "name": "Columbus",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "DCA",
-          "name": "DCA",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "DFW",
-          "name": "Dallas Fort Worth",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "DJT",
-          "name": "DJT",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "DPA",
-          "name": "DPA",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "HOU",
-          "name": "HOU",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "JVY",
-          "name": "JVY",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "LAX",
-          "name": "Los Angeles",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "LGA",
-          "name": "New York LaGuardia",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 2,
-          "dep_cancels": 0
-        },
-        {
-          "code": "LGW",
-          "name": "LGW",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "MEX",
-          "name": "MEX",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "MIA",
-          "name": "Miami",
-          "arr_delays": 3,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "MKE",
-          "name": "Milwaukee",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
-          "dep_cancels": 0
-        },
-        {
-          "code": "MSP",
-          "name": "Minneapolis",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "PTY",
-          "name": "PTY",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "SJU",
-          "name": "San Juan",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "SMF",
-          "name": "SMF",
-          "arr_delays": 0,
-          "arr_cancels": 0,
-          "dep_delays": 1,
-          "dep_cancels": 0
-        },
-        {
-          "code": "SYR",
-          "name": "SYR",
-          "arr_delays": 1,
-          "arr_cancels": 0,
-          "dep_delays": 0,
           "dep_cancels": 0
         }
       ]
